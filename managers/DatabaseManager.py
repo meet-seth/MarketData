@@ -26,7 +26,6 @@ class DatabaseManager:
         """
         self.client = pymongo.MongoClient()
         self.database = self.client[const.CONSTANT_DATABASE_NAME]
-        self.collections = const.CONSTANT_COLLECTION_NAMES
         
     
     def get_last_timestamp(self):
