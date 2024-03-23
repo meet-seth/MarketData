@@ -1,6 +1,6 @@
 STOCKS_TO_TRACK = ["M&MFIN.NS",
                    "INFY.NS",
-                   "JUBLFOODS.NS",
+                   "JUBLFOOD.NS",
                    "FACT.NS",
                    "INDIANB.NS",
                    "HINDPETRO.NS"]
