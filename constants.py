@@ -3,7 +3,8 @@ STOCKS_TO_TRACK = ["M&MFIN.NS",
                    "JUBLFOOD.NS",
                    "FACT.NS",
                    "INDIANB.NS",
-                   "HINDPETRO.NS"]
+                   "HINDPETRO.NS",
+                   "CIPLA.NS"]
 
 CONSTANT_DATABASE_NAME = "market_data"
 

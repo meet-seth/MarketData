@@ -28,7 +28,8 @@ class DownloadManager:
         
         ticker = yf.Ticker(stock)
         num_iterations,remainder = divmod((current_timestamp - last_traded_timestamp).days,const.CONSTANT_DAYS_PER_REQUEST)
-        print(num_iterations,remainder)
+        
+        
         data = pd.DataFrame()
         for i in range(num_iterations+1):
             if i==num_iterations:
@@ -42,12 +43,15 @@ class DownloadManager:
                 
             start_date = last_traded_timestamp + pd.Timedelta(days=1)
             end_date = start_date + pd.Timedelta(days=days)
-            print(start_date,end_date)
             history = ticker.history(interval=const.CONSTANT_TIME_INTERVAL,start=start_date,end=end_date)
             if len(history)!=0:
                 data = pd.concat([data,history],axis=0)
                 last_traded_timestamp = data.index[-1]
+                
+                const.LOGGER.info(f"{stock} : Download Successful for start date : {start_date} -> end date : {end_date}")
+                
             else:
+                const.LOGGER.error(f"{stock} : Download Failed for start date {start_date} -> end date : {end_date}")
                 pass
             
         if len(data)==0:
@@ -60,9 +64,13 @@ class DownloadManager:
         
         if flag:
             self.database.update_one(const.CONSTANT_TIMESTAMP_COLLECTION,{'ticker': stock},{'$set': {'last_recorded_timestamp': last_traded_timestamp}})
+            
+            const.LOGGER.info(f"{stock} : Updated Last Traded Timestamp to {last_traded_timestamp}")
+            
         else:
-            self.database.insert_one(const.CONSTANT_TIMESTAMP_COLLECTION,{'ticker': stock,
-                                                                          'last_recorded_timestamp': last_traded_timestamp})
+            self.database.insert_one(const.CONSTANT_TIMESTAMP_COLLECTION,{'ticker': stock,   'last_recorded_timestamp': last_traded_timestamp})
+            
+            const.LOGGER.info(f"{stock} : Added Last Traded Timestamp - {last_traded_timestamp}")
             
         self.shared_dict[stock] = True
         return
@@ -97,9 +105,12 @@ class DownloadManager:
         database. Also updates the last timestamp in the database.
         """
         
+        const.LOGGER.info(f"Starting Download")
+        
         current_timestamp = pd.Timestamp.today(tz=None)
         
         for stock in self.stocks:
+            
             if stock in self.last_timestamp_dict.keys():
                 flag = True
                 ticker_last_traded = self.last_timestamp_dict[stock]
@@ -107,7 +118,7 @@ class DownloadManager:
                 flag = False
                 ticker_last_traded = current_timestamp - pd.Timedelta(days=const.CONSTANT_MAX_SIZE_LIMIT)
             
-            print(f"Downloading for {stock}")
+            
             self.download_and_update_data(stock,
                                           current_timestamp,
                                           ticker_last_traded,
