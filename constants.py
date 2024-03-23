@@ -1,10 +1,7 @@
-STOCKS_TO_TRACK = ["M&MFIN.NS",
-                   "INFY.NS",
-                   "JUBLFOOD.NS",
-                   "FACT.NS",
-                   "INDIANB.NS",
-                   "HINDPETRO.NS",
-                   "CIPLA.NS"]
+STOCKS_FILE = "stocks.txt"
+
+with open(STOCKS_FILE) as f:
+    STOCKS_TO_TRACK = list(map(str.strip,f.readlines()))
 
 CONSTANT_DATABASE_NAME = "market_data"
 
