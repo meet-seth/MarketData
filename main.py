@@ -12,7 +12,6 @@ class Application:
                                           encoding='utf-8')
         filehandler.setFormatter(formatter)
         const.LOGGER.addHandler(filehandler)
-        
     
     def run(self):
         self.download_manager.download()

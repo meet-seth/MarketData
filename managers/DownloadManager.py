@@ -46,6 +46,7 @@ class DownloadManager:
             history = ticker.history(interval=const.CONSTANT_TIME_INTERVAL,start=start_date,end=end_date)
             if len(history)!=0:
                 data = pd.concat([data,history],axis=0)
+                data.sort_index(ascending=True,inplace=True)
                 last_traded_timestamp = data.index[-1]
                 
                 const.LOGGER.info(f"{stock} : Download Successful for start date : {start_date} -> end date : {end_date}")
@@ -111,7 +112,9 @@ class DownloadManager:
         
         for stock in self.stocks:
             
+            print(stock)
             if stock in self.last_timestamp_dict.keys():
+                print("Last Timestamp found")
                 flag = True
                 ticker_last_traded = self.last_timestamp_dict[stock]
             else:
