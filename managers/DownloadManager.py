@@ -96,7 +96,8 @@ class DownloadManager:
             "Open": row.Open,
             "High": row.High,
             "Low": row.Low,
-            "Close": row.Close
+            "Close": row.Close,
+            "Volume": row.Volume
         }
         
     def download(self):
