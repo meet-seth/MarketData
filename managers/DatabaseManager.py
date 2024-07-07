@@ -41,7 +41,7 @@ class DatabaseManager:
         last_recorded_timestamp = dict()
         
         for i in self.database[const.CONSTANT_TIMESTAMP_COLLECTION].find():
-            last_recorded_timestamp[i['ticker']] = i['last_recorded_timestamp']
+            last_recorded_timestamp[i['ticker']] = i
             
         return last_recorded_timestamp
         
@@ -78,7 +78,7 @@ class DatabaseManager:
         Returns:
             mongodb cursor: Result of find_one operation
         """
-        result = self.database[collection_name].find_one(criteria)
+        result = list(self.database[collection_name].find_one(criteria))
         return result
         
     def find_all(self,collection_name,criteria):
@@ -93,7 +93,7 @@ class DatabaseManager:
         Returns:
             monogdb cursor: Result of find operation 
         """
-        result = self.database[collection_name].find(criteria)
+        result = list(self.database[collection_name].find(criteria))
         return result
     
     def update_one(self,collection_name,criteria,data_to_replace):
@@ -139,3 +139,23 @@ class DatabaseManager:
             criteria (dict): Dictionary as per mongodb standards
         """
         self.database[collection_name].delete_many(criteria)
+        
+    def aggregate(self,collection_name,criteria_list):
+        """
+        Executes an aggregation pipeline on the specified collection.
+
+        Args:
+            collection_name (str): Name of the collection.
+            criteria_list (list): List of aggregation pipeline stages.
+
+        Returns:
+            pymongo.cursor.Cursor: A cursor object that allows iterating over the
+            results of the aggregation pipeline.
+        """
+        return list(self.database[collection_name].aggregate(criteria_list))
+    
+    def get_all_collections(self,name=True):
+        if name:
+            return self.database.list_collection_names()
+        else:
+            return list(self.database.list_collections())

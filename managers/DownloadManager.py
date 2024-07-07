@@ -117,7 +117,7 @@ class DownloadManager:
             if stock in self.last_timestamp_dict.keys():
                 print("Last Timestamp found")
                 flag = True
-                ticker_last_traded = self.last_timestamp_dict[stock]
+                ticker_last_traded = self.last_timestamp_dict[stock]['last_recorded_timestamp']
             else:
                 flag = False
                 ticker_last_traded = current_timestamp - pd.Timedelta(days=const.CONSTANT_MAX_SIZE_LIMIT)
