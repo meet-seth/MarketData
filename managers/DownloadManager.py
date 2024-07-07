@@ -3,11 +3,11 @@ import yfinance as yf
 import pandas as pd
 import multitasking
 import numpy as np
-from managers.DatabaseManager import DatabaseManager
+from managers.DatabaseManager import MongoManager
 class DownloadManager:
     def __init__(self) -> None:
         self.stocks = const.STOCKS_TO_TRACK
-        self.database = DatabaseManager()
+        self.database = MongoManager()
         self.last_timestamp_dict = self.database.get_last_timestamp()
         self.shared_dict = {j: False for j in self.stocks}
         

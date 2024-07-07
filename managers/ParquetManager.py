@@ -1,6 +1,7 @@
 import pandas as pd
 import constants as const
-from managers.DatabaseManager import DatabaseManager
+import os
+from managers.DatabaseManager import MongoManager
 
 class MongoToParquet:
     def __init__(self):
@@ -46,12 +47,17 @@ class MongoToParquet:
                 }
             }
         ]
-        self.database_manager = DatabaseManager()
+        self.database_manager = MongoManager()
         self.last_timestamp_dict = self.database_manager.get_last_timestamp()
-        
+        self.save_dir = const.PARQUET_FOLDER
         
     
-    def convert(self,collection_name):
+    def create_folder_if_not_exist(self,collection_name):
+        if not os.path.exists(os.path.join(self.save_dir,collection_name)):
+            os.makedirs(os.path.join(self.save_dir,collection_name))
+        
+    
+    def save(self,collection_name):
         
         available_time_stamps = self.database_manager.aggregate(
             collection_name,
@@ -65,24 +71,33 @@ class MongoToParquet:
         except Exception as e:
             # const.LOGGER.error
             print(f"{collection_name} : Unable to Read last parquet date. Exited with error {e}")
+            
+        self.create_folder_if_not_exist(collection_name)
         
         for time_stamp in available_time_stamps['_id']:
             
             self.get_single_day_query['$expr']['$eq'][1] = time_stamp
-            print(self.get_single_day_query)
             stock_prices = self.database_manager.find_all(
                 collection_name,
                 self.get_single_day_query
             )
             stock_prices = pd.DataFrame(stock_prices)
-            return stock_prices
+            # print(stock_prices)
+            stock_prices.drop("_id",axis=1,inplace=True)
+            # const.LOGGER.info
+            print(f"{collection_name} : Writing {time_stamp}.parquet.gzip file.")
+            stock_prices.to_parquet(
+                f"{self.save_dir}/{collection_name}/{time_stamp}.parquet.gzip",
+                compression="gzip"
+            )
+            print(f"{collection_name} : Updated last timestamp for writing parquet data")
+            self.database_manager.update_one("last_timestamp",{'ticker': collection_name},{'$set': {'last_parquet_date': time_stamp}})
         
-    def convert_all(self):
+    def save_all(self):
         available_collections = self.database_manager.get_all_collections(name=True)
         for collection in available_collections:
             if collection in self.last_timestamp_dict.keys():
-                stock_prices = self.convert(collection_name=collection)
-                return stock_prices
+                self.save(collection_name=collection)
             
         
         

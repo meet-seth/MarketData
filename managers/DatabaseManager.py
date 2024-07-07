@@ -1,7 +1,7 @@
 import pymongo
 import constants as const
 
-class DatabaseManager:
+class MongoManager:
     
     def __init__(self):
         """
