@@ -66,7 +66,7 @@ class MongoManager:
         """
         self.database[collection_name].insert_many(data_to_insert)
         
-    def find_one(self,collection_name,criteria):
+    def find_one(self,collection_name,criteria,**kwargs):
         """
         Find one occurrence of data that matches the criteria
         from collection_name
@@ -78,10 +78,10 @@ class MongoManager:
         Returns:
             mongodb cursor: Result of find_one operation
         """
-        result = list(self.database[collection_name].find_one(criteria))
+        result = list(self.database[collection_name].find_one(criteria,**kwargs))
         return result
         
-    def find_all(self,collection_name,criteria):
+    def find_all(self,collection_name,criteria,**kwargs):
         """
         Find all the occurrences of data that match the criteria 
         from collection_name
@@ -93,7 +93,7 @@ class MongoManager:
         Returns:
             monogdb cursor: Result of find operation 
         """
-        result = list(self.database[collection_name].find(criteria))
+        result = list(self.database[collection_name].find(criteria,**kwargs))
         return result
     
     def update_one(self,collection_name,criteria,data_to_replace):
